@@ -13,8 +13,6 @@ $LocalBootConfigForm.ClientSize         = '640,450'
 $LocalBootConfigForm.text               = "Raspberry Pi First Boot Configuration"
 $LocalBootConfigForm.BackColor          = "#ffffff"
 $LocalBootConfigForm.TopMost            = $false
-#$Icon                                = New-Object system.drawing.icon ("//thunnissen.local/netlogon/BootConfig.ico")
-#$LocalBootConfigForm.Icon               = $Icon
 
 $Title                           = New-Object system.Windows.Forms.Label
 $Title.text                      = "Configure SD Card for Raspberry Pi boot"
