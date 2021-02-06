@@ -322,7 +322,7 @@ network={
 
 #---------------------------------------------------------[Script]--------------------------------------------------------
 
-#Hide-Console
+Hide-Console
 
 # Get Connected Drives named Boot
 $BootDrives = (
