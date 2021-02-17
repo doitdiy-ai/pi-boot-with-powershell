@@ -274,7 +274,7 @@ rm /boot/pipassword
 # Remove autostart of welcome to raspberry pi
 rm /etc/xdg/autostart/piwiz.desktop
 # Expand file system
-canexpand=``raspi-config nonint get_can_expand``; if [ `"$canexpand`" -eq `"0`" ]; then raspi-config nonint do_expand_rootfs; fi
+canexpand=``raspi-config nonint get_can_expand``; if [ `"`$canexpand`" -eq `"0`" ]; then raspi-config nonint do_expand_rootfs; fi
 echo `"Completed custom configuration`"
 sleep 5
 
