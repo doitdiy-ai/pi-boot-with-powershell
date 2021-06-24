@@ -178,7 +178,7 @@ $cancelBtn.DialogResult          = [System.Windows.Forms.DialogResult]::Cancel
 $LocalBootConfigForm.CancelButton   = $cancelBtn
 $LocalBootConfigForm.Controls.Add($cancelBtn)
 
-$LocalBootConfigForm.controls.AddRange(@($Title,$Description,$BootConfigStatus,$BootConfigFound,$BootConfigPiPassword,$BootConfigPiPasswordLabel,$BootConfigDrive,$AddBootConfigBtn,$cancelBtn,$BootConfigDriveLabel,$BootConfigDetails, $BootConfigSSIDLabel, $BootConfigSSID, $BootConfigSSIDPWLabel, $BootConfigSSIDPW, $BootConfigModifyPWLabel, $BootConfigModifyPW, $BootConfigHostnameLabel, $BootConfigHostname ))
+$LocalBootConfigForm.controls.AddRange(@($Title,$Description,$BootConfigStatus,$BootConfigFound,$BootConfigDriveLabel,$BootConfigDrive,$BootConfigDetails,$BootConfigPiPasswordLabel,$BootConfigPiPassword, $BootConfigSSIDLabel, $BootConfigSSID, $BootConfigSSIDPWLabel, $BootConfigSSIDPW, $BootConfigHostnameLabel, $BootConfigHostname, $BootConfigModifyPWLabel, $BootConfigModifyPW, $AddBootConfigBtn,$cancelBtn ))
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 
@@ -221,7 +221,7 @@ function Hide-Console
 
 function AddBootConfig {
   $BootConfigFound.ForeColor = "#000000"
-  $BootConfigFound.Text = 'Adding BootConfig...'
+  $BootConfigFound.Text = 'Boot configuration completed...'
   $PiPW = $BootConfigPiPassword.Text
   $PiPWChecked = $BootConfigModifyPW
   $SSID = $BootConfigSSID.Text
@@ -229,9 +229,127 @@ function AddBootConfig {
   $Hostname = $BootConfigHostname.Text
   $SDCard = $BootConfigDrive.SelectedItem
 
+  function Get-Md5Crypt {
+    <#
+    .DESCRIPTION
+        Generate a md5crypt string ($1$salt$hash)
+    .PARAMETER String
+        The string to hash
+    .PARAMETER Salt
+        The salt to use (can be a crypt string)
+    .PARAMETER SaltSize
+        In case no salt is provided generate one with length SaltSize (default: 10)
+    .NOTES
+        Thanks to Aaron Toponce explanation: https://pthree.org/2015/08/07/md5crypt-explained/
+    #>
+    param (
+        [Parameter(Position=0,ValueFromPipeline)]
+        [string]
+        $String,
+
+        [string]
+        $Salt,
+
+        [ValidateRange(3,100)]
+        [int]
+        $SaltSize = 10
+    )
+
+    if($String.Length -eq 0) {
+        $pass = [System.Net.NetworkCredential]::new("", (Read-Host -AsSecureString -Prompt "Enter Password")).Password
+        $repeat = [System.Net.NetworkCredential]::new("", (Read-Host -AsSecureString -Prompt "Repeat Password")).Password
+        if(-not $pass.Equals($repeat)) {
+            throw "Passwords didn't match!"
+        }
+        $String = $pass
+    }
+
+    if($Salt.Length -eq 0) {
+        $Salt = (-join ((48..57) +(65..90) + (97..122) | Get-Random -Count $SaltSize | ForEach-Object {[char]$_}))
+    }elseif($Salt.StartsWith('$1$')) {
+        $Salt = ($Salt -split '\$')[2]
+    }
+
+    $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+    $utf8 = new-object -TypeName System.Text.UTF8Encoding
+
+    $pw = [byte[]]$utf8.GetBytes($String)
+    $magic = [byte[]]$utf8.GetBytes('$1$')
+    $bsalt = $utf8.GetBytes($Salt)
+
+    $itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+    $tmp = [System.Collections.ArrayList]@()
+    $tmp.AddRange($pw)
+    $tmp.AddRange($bsalt)
+    $tmp.AddRange($pw)
+    $db = $md5.ComputeHash([byte[]]$tmp)
+
+    $da_bytes = [System.Collections.ArrayList]@()
+    $da_bytes.AddRange($pw)
+    $da_bytes.AddRange($magic)
+    $da_bytes.AddRange($bsalt)
+    $i = $pw.Length
+    while($i -gt 0) {
+        if($i -gt 16) {
+            $da_bytes.AddRange($db)
+        }else{
+            $da_bytes.AddRange($db[0..$($i-1)])
+        }
+        $i -= 16
+    }
+
+    $i = $pw.Length
+    while($i -gt 0) {
+        if($i -band 1) {
+            $da_bytes.Add([byte]0) | Out-Null
+        }else{
+            $da_bytes.Add($pw[0]) | Out-Null
+        }
+        $i = $i -shr 1
+    }
+
+    $dc = [byte[]]$md5.ComputeHash([byte[]]$da_bytes)
+
+    for($i = 0; $i -lt 1000; $i++) {
+        $tmp = [System.Collections.ArrayList]@()
+        if($i -band 1) {
+            $tmp.AddRange($pw)
+        }else{
+            $tmp.AddRange($dc)
+        }
+        if($i%3) { $tmp.AddRange($bsalt) }
+        if($i%7) { $tmp.AddRange($pw) }
+        if($i -band 1) {
+            $tmp.AddRange($dc)
+        }else{
+            $tmp.AddRange($pw)
+        }
+        $dc = [byte[]]$md5.ComputeHash([byte[]]$tmp)
+    }
+
+    $final = ''
+    @(@(0,6,12),@(1,7,13),@(2,8,14),@(3,9,15),@(4,10,5)) | ForEach-Object {
+        $x, $y, $z = $_
+        $v = ([int]$dc[$x] -shl 16) -bor ([int]$dc[$y] -shl 8) -bor [int]$dc[$z]
+        1..4 | ForEach-Object {
+            $final += $itoa64[ $v -band 0x3f ]
+            $v = $v -shr 6
+        }
+    }
+    $v = [int]$dc[11]
+    1..2 | ForEach-Object {
+        $final += $itoa64[$v -band 0x3f]
+        $v = $v -shr 6
+    }
+
+    '{0}{1}${2}' -f $utf8.GetString($magic),$salt,$final
+  }
+  if ($PiPWChecked.Checked){$PiPWCrypt = Get-Md5Crypt -String $PiPW -SaltSize 8}
+
+
 #--------------[cmdline.txt]----------------------
   $Cmdline = ($SDCard + "cmdline.txt")
-  $PiPWFile = ($SDCard + "pipassword")
   $unattended = ($SDCard + "unattended")
   $wpasupplicant = ($SDCard +"wpa_supplicant.conf")
   $Inittext =  " init=/bin/bash -c `"mount -t proc proc /proc; mount -t sysfs sys /sys; mount /boot; sed -i 's/\r$//' /boot/unattended; source /boot/unattended`""
@@ -239,9 +357,6 @@ function AddBootConfig {
     $CmdlineContent = (((Get-Content $Cmdline) -csplit "( init)")[0] + $Inittext)
     Move-Item -Path $Cmdline -Destination ($SDCard + "cmdline.bak") -Force
     Set-Content -Path $Cmdline -Value $CmdlineContent -NoNewLine
-
-#--------------[pipassword file]-----------------
-    If ($PiPWChecked.Checked) {Set-Content -Path $PiPWFile -Value $PiPW -NoNewLine}
 
 #--------------[unattended file]-----------------
   $unattendedtext = "# 1. MAKING THE SYSTEM WORK. DO NOT REMOVE
@@ -269,8 +384,8 @@ raspi-config nonint do_change_locale en_US.UTF.8
 raspi-config nonint do_configure_keyboard us
 # Set password, uncomment (remove pound sign) if you want to set the pi password here
 sed -i 's/\r$//' /boot/pipassword
-$(if (-not $PiPWChecked.Checked){"#"})usermod --password `$(openssl passwd -1 `$(cat /boot/pipassword)) pi
-rm /boot/pipassword
+$(if ($PiPWChecked.Checked){"usermod --password `'"+$PiPWCrypt+"`' pi"})
+passwd --expire pi
 # Remove autostart of welcome to raspberry pi
 rm /etc/xdg/autostart/piwiz.desktop
 # Expand file system
