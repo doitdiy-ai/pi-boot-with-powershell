@@ -4,12 +4,119 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 $script:SDCard = $true
 
+
+  $TZtoOlson = @"
+W. Central Africa Standard Time = Africa/Bangui
+Egypt Standard Time = Africa/Cairo
+Morocco Standard Time = Africa/Casablanca
+South Africa Standard Time = Africa/Harare
+Greenwich Standard Time = Africa/Monrovia
+E. Africa Standard Time = Africa/Nairobi
+Namibia Standard Time = Africa/Windhoek
+Alaskan Standard Time = America/Anchorage
+Argentina Standard Time = America/Argentina/San_Juan
+Paraguay Standard Time = America/Asuncion
+Bahia Standard Time = America/Bahia
+SA Pacific Standard Time = America/Bogota
+Venezuela Standard Time = America/Caracas
+SA Eastern Standard Time = America/Cayenne
+Central Standard Time = America/Chicago
+Mountain Standard Time (Mexico) = America/Chihuahua
+Central Brazilian Standard Time = America/Cuiaba
+Mountain Standard Time = America/Denver
+Greenland Standard Time = America/Godthab
+Central America Standard Time = America/Guatemala
+Atlantic Standard Time = America/Halifax
+US Eastern Standard Time = America/Indianapolis
+SA Western Standard Time = America/La_Paz
+Pacific Standard Time = America/Los_Angeles
+Mexico Standard Time = America/Mexico_City
+Montevideo Standard Time = America/Montevideo
+Eastern Standard Time = America/New_York
+UTC-02 = America/Noronha
+US Mountain Standard Time = America/Phoenix
+Canada Central Standard Time = America/Regina
+Pacific Standard Time (Mexico) = America/Santa_Isabel
+Pacific SA Standard Time = America/Santiago
+E. South America Standard Time = America/Sao_Paulo
+Newfoundland Standard Time = America/St_Johns
+New Zealand Standard Time = Antarctica/McMurdo
+Central Asia Standard Time = Asia/Almaty
+Jordan Standard Time = Asia/Amman
+Arabic Standard Time = Asia/Baghdad
+Azerbaijan Standard Time = Asia/Baku
+SE Asia Standard Time = Asia/Bangkok
+Middle East Standard Time = Asia/Beirut
+India Standard Time = Asia/Calcutta
+Sri Lanka Standard Time = Asia/Colombo
+Syria Standard Time = Asia/Damascus
+Bangladesh Standard Time = Asia/Dhaka
+Arabian Standard Time = Asia/Dubai
+North Asia East Standard Time = Asia/Irkutsk
+Israel Standard Time = Asia/Jerusalem
+Afghanistan Standard Time = Asia/Kabul
+Kamchatka Standard Time = Asia/Kamchatka
+Pakistan Standard Time = Asia/Karachi
+Nepal Standard Time = Asia/Katmandu
+North Asia Standard Time = Asia/Krasnoyarsk
+Singapore Standard Time = Asia/Kuala_Lumpur
+Arab Standard Time = Asia/Kuwait
+Magadan Standard Time = Asia/Magadan
+N. Central Asia Standard Time = Asia/Novosibirsk
+West Asia Standard Time = Asia/Oral
+Myanmar Standard Time = Asia/Rangoon
+Korea Standard Time = Asia/Seoul
+China Standard Time = Asia/Shanghai
+Taipei Standard Time = Asia/Taipei
+Georgian Standard Time = Asia/Tbilisi
+Iran Standard Time = Asia/Tehran
+Tokyo Standard Time = Asia/Tokyo
+Ulaanbaatar Standard Time = Asia/Ulaanbaatar
+Vladivostok Standard Time = Asia/Vladivostok
+Yakutsk Standard Time = Asia/Yakutsk
+Ekaterinburg Standard Time = Asia/Yekaterinburg
+Armenian Standard Time = Asia/Yerevan
+Azores Standard Time = Atlantic/Azores
+Cape Verde Standard Time = Atlantic/Cape_Verde
+Cen. Australia Standard Time = Australia/Adelaide
+E. Australia Standard Time = Australia/Brisbane
+AUS Central Standard Time = Australia/Darwin
+Tasmania Standard Time = Australia/Hobart
+W. Australia Standard Time = Australia/Perth
+AUS Eastern Standard Time = Australia/Sydney
+UTC = Etc/GMT
+UTC-11 = Etc/GMT+11
+Dateline Standard Time = Etc/GMT+12
+UTC+12 = Etc/GMT-12
+W. Europe Standard Time = Europe/Amsterdam
+GTB Standard Time = Europe/Athens
+Central Europe Standard Time = Europe/Belgrade
+Romance Standard Time = Europe/Brussels
+GMT Standard Time = Europe/Dublin
+FLE Standard Time = Europe/Helsinki
+E. Europe Standard Time = Europe/Minsk
+Russian Standard Time = Europe/Moscow
+Central European Standard Time = Europe/Sarajevo
+Mauritius Standard Time = Indian/Mauritius
+Samoa Standard Time = Pacific/Apia
+Fiji Standard Time = Pacific/Fiji
+Central Pacific Standard Time = Pacific/Guadalcanal
+West Pacific Standard Time = Pacific/Guam
+Hawaiian Standard Time = Pacific/Honolulu
+Tonga Standard Time = Pacific/Tongatapu
+"@
+$TZtoOlsonHash = ConvertFrom-StringData $TZtoOlson
+
+$Locales = "ar-AE","ar-BH","ar-DZ","ar-EG","ar-IQ","ar-JO","ar-KW","ar-LB","ar-LY","ar-MA","ar-OM","ar-QA","ar-SA","ar-SD","ar-SY","ar-TN","ar-YE","be-BY","bg-BG","bn-BD","bn-IN","ca-ES","cs-CZ","da-DK","de-AT","de-CH","de-DE","de-LU","el-CY","el-GR","en-AU","en-CA","en-GB","en-IE","en-IN","en-MT","en-NZ","en-PH","en-SG","en-US","en-ZA","es-AR","es-BO","es-CL","es-CO","es-CR","es-DO","es-EC","es-ES","es-GT","es-HN","es-MX","es-NI","es-PA","es-PE","es-PR","es-PY","es-SV","es-US","es-UY","es-VE","et-EE","fi-FI","fr-BE","fr-CA","fr-CH","fr-FR","fr-LU","ga-IE","hi-IN","hr-HR","hu-HU","in-ID","is-IS","it-CH","it-IT","iw-IL","ja-JP","ja-JP-JP","ko-KR","lt-LT","lv-LV","mk-MK","ms-MY","mt-MT","nl-BE","nl-NL","no-NO","no-NO-NY","pl-PL","pt-BR","pt-PT","ro-RO","ru-RU","sk-SK","sl-SI","sq-AL","sr-BA","sr-CS","sr-ME","sr-RS","sv-SE","th-TH","th-TH-TH","tr-TR","uk-UA","vi-VN","zh-CN","zh-HK","zh-SG","zh-TW"
+
+$Countries = "AE","AL","AR","AT","AU","BA","BD","BE","BG","BH","BO","BR","BY","CA","CH","CL","CN","CO","CR","CS","CY","CZ","DE","DK","DO","DZ","EC","EE","EG","ES","FI","FR","GB","GR","GT","HK","HN","HR","HU","ID","IE","IL","IN","IQ","IS","IT","JO","JP","KR","KW","LB","LT","LU","LV","LY","MA","ME","MK","MT","MX","MY","NI","NL","NO","NY","NZ","OM","PA","PE","PH","PL","PR","PT","PY","QA","RO","RS","RU","SA","SD","SE","SG","SI","SK","SV","SY","TH","TN","TR","TW","UA","US","UY","VE","VN","YE","ZA"
+
 #---------------------------------------------------------[Form]--------------------------------------------------------
 
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 $LocalBootConfigForm                    = New-Object system.Windows.Forms.Form
-$LocalBootConfigForm.ClientSize         = '640,450'
+$LocalBootConfigForm.ClientSize         = '940,450'
 $LocalBootConfigForm.text               = "Raspberry Pi First Boot Configuration"
 $LocalBootConfigForm.BackColor          = "#ffffff"
 $LocalBootConfigForm.TopMost            = $false
@@ -155,6 +262,46 @@ $BootConfigModifyPW                     = New-Object system.Windows.Forms.CheckB
 $BootConfigModifyPW.location            = New-Object System.Drawing.Point(180,317)
 $BootConfigModifyPW.Visible             = $false
 
+$BootConfigTZLabel                = New-Object system.Windows.Forms.Label
+$BootConfigTZLabel.text           = "Timezone:"
+$BootConfigTZLabel.AutoSize       = $true
+$BootConfigTZLabel.width          = 25
+$BootConfigTZLabel.height         = 20
+$BootConfigTZLabel.location       = New-Object System.Drawing.Point(490,200)
+$BootConfigTZLabel.Font           = 'Microsoft Sans Serif,10,style=Bold'
+$BootConfigTZLabel.Visible        = $false
+
+$BootConfigTZ                     = New-Object system.Windows.Forms.ComboBox
+$BootConfigTZ.width               = 214
+$BootConfigTZ.height              = 20
+$BootConfigTZ.location            = New-Object System.Drawing.Point(650,197)
+$BootConfigTZ.Font                = 'Microsoft Sans Serif,10'
+$BootConfigTZ.Visible             = $false
+ForEach ($Item in $($TZtoOlsonHash.GetEnumerator() | sort -Property Value)) {
+ [void] $BootConfigTZ.Items.Add($Item.Value)
+}
+$BootConfigTZ.SelectedItem = $BootConfigTZ.Items[$BootConfigTZ.FindString($TZtoOlsonHash[(Get-Timezone).StandardName])]
+
+$BootConfigLocaleLabel                = New-Object system.Windows.Forms.Label
+$BootConfigLocaleLabel.text           = "Language and Country:"
+$BootConfigLocaleLabel.AutoSize       = $true
+$BootConfigLocaleLabel.width          = 25
+$BootConfigLocaleLabel.height         = 20
+$BootConfigLocaleLabel.location       = New-Object System.Drawing.Point(490,230)
+$BootConfigLocaleLabel.Font           = 'Microsoft Sans Serif,10,style=Bold'
+$BootConfigLocaleLabel.Visible        = $false
+
+$BootConfigLocale                     = New-Object system.Windows.Forms.ComboBox
+$BootConfigLocale.width               = 214
+$BootConfigLocale.height              = 20
+$BootConfigLocale.location            = New-Object System.Drawing.Point(650,227)
+$BootConfigLocale.Font                = 'Microsoft Sans Serif,10'
+$BootConfigLocale.Visible             = $false
+ForEach ($Item in $Locales) {
+ [void] $BootConfigLocale.Items.Add($Item)
+}
+$BootConfigLocale.SelectedItem = $BootConfigLocale.Items[$BootConfigLocale.FindString((Get-WinSystemLocale).Name)]
+
 $AddBootConfigBtn                   = New-Object system.Windows.Forms.Button
 $AddBootConfigBtn.BackColor         = "#ff7b00"
 $AddBootConfigBtn.text              = "Configure"
@@ -178,7 +325,7 @@ $cancelBtn.DialogResult          = [System.Windows.Forms.DialogResult]::Cancel
 $LocalBootConfigForm.CancelButton   = $cancelBtn
 $LocalBootConfigForm.Controls.Add($cancelBtn)
 
-$LocalBootConfigForm.controls.AddRange(@($Title,$Description,$BootConfigStatus,$BootConfigFound,$BootConfigDriveLabel,$BootConfigDrive,$BootConfigDetails,$BootConfigPiPasswordLabel,$BootConfigPiPassword, $BootConfigSSIDLabel, $BootConfigSSID, $BootConfigSSIDPWLabel, $BootConfigSSIDPW, $BootConfigHostnameLabel, $BootConfigHostname, $BootConfigModifyPWLabel, $BootConfigModifyPW, $AddBootConfigBtn,$cancelBtn ))
+$LocalBootConfigForm.controls.AddRange(@($Title,$Description,$BootConfigStatus,$BootConfigFound,$BootConfigDriveLabel,$BootConfigDrive,$BootConfigDetails,$BootConfigPiPasswordLabel,$BootConfigPiPassword, $BootConfigSSIDLabel, $BootConfigSSID, $BootConfigSSIDPWLabel, $BootConfigSSIDPW, $BootConfigHostnameLabel, $BootConfigHostname, $BootConfigModifyPWLabel, $BootConfigModifyPW, $BootConfigTZLabel, $BootConfigTZ, $BootConfigLocaleLabel, $BootConfigLocale, $AddBootConfigBtn,$cancelBtn ))
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 
@@ -377,15 +524,16 @@ raspi-config nonint do_resolution 2 82
 # enable the camera (optional)
 raspi-config nonint do_camera 0
 # Set timezone
-raspi-config nonint do_change_timezone America/Chicago
+raspi-config nonint do_change_timezone $($BootConfigTZ.Text)
 # Set locale
-raspi-config nonint do_change_locale en_US.UTF.8
+raspi-config nonint do_change_locale $($BootConfigLocale.Text).UTF.8
 # Set keyboard
-raspi-config nonint do_configure_keyboard us
+raspi-config nonint do_configure_keyboard $(($BootConfigLocale.Text).Substring(($BootConfigLocale.Text).Length - 2))
 # Set password, uncomment (remove pound sign) if you want to set the pi password here
 sed -i 's/\r$//' /boot/pipassword
 $(if ($PiPWChecked.Checked){"usermod --password `'"+$PiPWCrypt+"`' pi"})
 passwd --expire pi
+raspi-config nonint do_boot_behaviour B3
 # Remove autostart of welcome to raspberry pi
 rm /etc/xdg/autostart/piwiz.desktop
 # Expand file system
@@ -407,7 +555,7 @@ sleep 5"
 #--------------[wpa_supplicant.conf file]-----------------
   $wpasupplicanttext = "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
-country=US
+country=$(($BootConfigLocale.Text).Substring(($BootConfigLocale.Text).Length - 2))
 
 network={
         ssid=`"$($BootConfigSSID.Text)`"
@@ -432,6 +580,10 @@ network={
   $BootConfigModifyPW.Visible = $false
   $BootConfigHostnameLabel.Visible = $false
   $BootConfigHostname.Visible = $false
+  $BootConfigTZLabel.Visible = $false
+  $BootConfigTZ.Visible = $false
+  $BootConfigLocaleLabel.Visible = $false
+  $BootConfigLocale.Visible = $false
   $cancelBtn.text = "Close"
 }
 
@@ -467,6 +619,10 @@ If ($BootDrives.length -ne 0) {
   $BootConfigModifyPW.Visible = $true
   $BootConfigHostnameLabel.Visible = $true
   $BootConfigHostname.Visible = $true
+  $BootConfigTZLabel.Visible = $true
+  $BootConfigTZ.Visible = $true
+  $BootConfigLocaleLabel.Visible = $true
+  $BootConfigLocale.Visible = $true
 }else{
   $BootConfigFound.text = "No SD Cards found"
   $BootConfigFound.ForeColor = "#D0021B"
@@ -476,7 +632,7 @@ If ($BootDrives.length -ne 0) {
 $AddBootConfigBtn.Add_Click({ AddBootConfig })
 
 $BootConfigDrive.Add_SelectedIndexChanged({
-    $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0))
+    $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
 })
 
 $BootConfigModifyPW.Add_CheckStateChanged({
@@ -488,23 +644,31 @@ $BootConfigModifyPW.Add_CheckStateChanged({
       $BootConfigPiPassword.Enabled = $false
       $BootConfigPiPassword.Text = ""
     }
-    $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0))
+    $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
 })
 
 $BootConfigPiPassword.Add_TextChanged({
-  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0))
+  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
 })
 
 $BootConfigSSID.Add_TextChanged({
-  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0))
+  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
 })
 
 $BootConfigSSIDPW.Add_TextChanged({
-  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0))
+  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
 })
 
 $BootConfigHostname.Add_TextChanged({
-  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0))
+  $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
+})
+
+$BootConfigTZ.Add_TextChanged({
+    $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
+})
+
+$BootConfigLocale.Add_TextChanged({
+    $AddBootConfigBtn.Enabled = (!(($BootConfigPiPassword.Text.Length -gt 0) -xor $BootConfigModifyPW.Checked) -and ($BootConfigSSID.Text.Length -gt 0) -and ($BootConfigSSIDPW.Text.Length -gt 0) -and ($BootConfigHostname.Text.Length -gt 0) -and ($BootConfigDrive.SelectedItem.Length -gt 0) -and ($BootConfigTZ.Text.Length -gt 0) -and ($BootConfigLocale.Text.Length -gt 0))
 })
 
 [void]$LocalBootConfigForm.ShowDialog()
